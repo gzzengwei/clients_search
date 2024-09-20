@@ -1,35 +1,68 @@
 # ClientsSearch
 
-TODO: Delete this and the text below, and describe your gem
+This is a minimalist command-line application built with Ruby that allows you to search through client data and find duplicate records.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/clients_search`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Setup
 
-## Installation
+- run `bundle install` to setup required gems 
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
-Install the gem and add to the application's Gemfile by executing:
+## Running the Command-line application
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+To run the application, use the following command from the project root directory:
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+```
+bin/clients_search <command> [field] [query] [json_file_path]
+```
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+Available commands:
+ - `search <field> <query>`: Search for clients by a specific field
+ - `find_duplicates [field]`: Find clients with duplicate values in the specified field (defaults to full_name if not specified)
 
-## Usage
 
-TODO: Write usage instructions here
+The `json_file_path` argument is optional. If not provided, the application will use the default JSON file located at `spec/data/clients.json`.
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Examples:
+```
+bin/clients_search search full_name John
+bin/clients_search search full_name John YOUR_COSTOM_JSON_FILE
+bin/clients_search search email alex.johnson@hotmail.com
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-## Contributing
+bin/clients_search find_duplicates
+bin/clients_search find_duplicates email
+bin/clients_search find_duplicates email YOUR_COSTOM_JSON_FILE
+bin/clients_search find_duplicates full_name
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/clients_search.
+## Assumptions
 
-## License
+- default json file is `spec/data/clients.json`
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+- The search functionality is case-insensitive and matches partial field values.
+
+- searchable fields are limited to data structure (email, full_name)
+
+-  The  `find_duplicates` command defaults to searching for duplicate on `email` field
+
+- If not existed or invalid json file is passed in the args, exception will be raised.
+
+- The main logic is extracted to `Repository` class so it can be re-used in other interface beside CLI like a web application
+
+   
+
+## Testing
+
+This prject use rspec, running test please run
+
+```
+bundle exec rspec
+```
+
+tests includes unit tests and an integration test 
+
+## Linter
+
+- run `standardrb` for ruby linter
+
