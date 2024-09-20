@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "clients_search"
+
+def print_usage
+  puts "Usage: client_search <command> [field] [query] [json_file_path]"
+  puts "Available commands: search, find_duplicates"
+  puts "For search command: client_search search <field> <query> [json_file_path]"
+  puts "For find_duplicates command: client_search find_duplicates [field] [json_file_path]"
+  puts "If json_file_path is not provided, the default file will be used."
+end
+
+if ARGV.empty? || (ARGV[0] == 'search' && ARGV.size < 3)
+  print_usage
+  exit 1
+end
+
+command = ARGV[0]
+
+json_file_path = nil
+
+case command
+when 'search'
+  if ARGV.size >= 4
+    json_file_path = ARGV[3]
+  end
+when 'find_duplicates'
+  if ARGV.size >= 3
+    json_file_path = ARGV[2]
+  end
+else
+  puts "Invalid command. Available commands: search, find_duplicates"
+  print_usage
+  exit 1
+end
+
+# Set default file path if not provided
+default_file_path = File.join(File.dirname(__FILE__), '..', 'spec', 'data', 'clients.json')
+data_file = json_file_path || default_file_path
+
+puts "file_path #{data_file} and default_file_path #{default_file_path}"
+if !File.exist?(data_file)
+  puts "Error: JSON file not found!(#{data_file})"
+  exit 1
+end
+
+begin
+  clients = ClientsSearch::Parser.call(file_path: data_file)
+  repository = ClientsSearch::Repository.new(clients: clients)
+  cli = ClientsSearch::CLI.new(repository: repository)
+
+  case command
+  when 'search'
+    field = ARGV[1]
+    query = ARGV[2]
+    cli.call([command, field, query])
+  when 'find_duplicates'
+    field = ARGV[1] unless ARGV[1] == json_file_path
+    cli.call([command, field].compact)
+  else
+    puts "Invalid command. Available commands: search, find_duplicates"
+  end
+rescue JSON::ParserError
+  puts "Error: JSON file not valid!"
+  exit 1
+rescue StandardError => e
+  puts "An unexpected error occurred: #{e.message}"
+  exit 1
+end
