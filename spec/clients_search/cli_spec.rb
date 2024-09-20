@@ -28,4 +28,23 @@ RSpec.describe ClientsSearch::CLI do
       )
     end
   end
+
+  context "#find_duplicates" do
+    it "returns duplicated email clients" do
+      expect(cli.find_duplicates).to include(
+        "jane.smith@yahoo.com" => [
+          {
+            "id" => 2,
+            "email" => "jane.smith@yahoo.com",
+            "full_name" => "Jane Smith"
+          },
+          {
+            "id" => 15,
+            "email" => "jane.smith@yahoo.com",
+            "full_name" => "Another Jane Smith"
+          }
+        ]
+      )
+    end
+  end
 end

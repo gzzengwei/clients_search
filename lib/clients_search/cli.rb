@@ -16,6 +16,12 @@ module ClientsSearch
       end
     end
 
+    def find_duplicates
+      clients
+        .group_by { |client| client["email"] }
+        .select { |_email, group| group.size > 1 }
+    end
+
     private
 
     def parse_clients(file_path)
