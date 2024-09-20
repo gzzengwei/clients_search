@@ -26,8 +26,8 @@ RSpec.describe ClientsSearch::Repository do
   let(:repository) { described_class.new(clients: clients) }
 
   context "#search" do
-    it "returns matched clients" do
-      expect(repository.search(full_name: "john")).to include(
+    it "returns matched clients by field" do
+      expect(repository.search(field: "full_name", query: "john")).to include(
         {
           "id" => 1,
           "email" => "john.doe@gmail.com",

@@ -10,9 +10,9 @@ module ClientsSearch
       @clients = clients
     end
 
-    def search(full_name:)
+    def search(field:, query:)
       clients.select do |client|
-        client["full_name"].downcase.include?(full_name.downcase)
+        client[field].to_s.downcase.include?(query.downcase)
       end
     end
 

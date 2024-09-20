@@ -26,14 +26,14 @@ RSpec.describe ClientsSearch::CLI do
   describe "#run" do
     context "for search command" do
       it "outputs matched clients" do
-        expect { cli.call(["search", "John"]) }.to output(
-          include("Matched clients for John")
+        expect { cli.call(["search", "full_name", "John"]) }.to output(
+          include("Matched clients for John on full_name")
           .and(include("john.doe@gmail.com"))
         ).to_stdout
       end
 
       it "outputs for no matched clients" do
-        expect { cli.call(["search", "Whoever"]) }.to output(
+        expect { cli.call(["search", "full_name", "Whoever"]) }.to output(
           include("No clients match for Whoever")
         ).to_stdout
       end

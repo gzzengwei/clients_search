@@ -10,12 +10,12 @@ module ClientsSearch
 
     def call(args)
       command = args[0]
-      query = args[1]
-      puts "command #{command} and query #{query}"
+      field = args[1]
+      query = args[2]
 
       case command
       when "search"
-        search(full_name: query)
+        search(field, query)
       when "find_duplicates"
         find_duplicates
       else
@@ -25,13 +25,13 @@ module ClientsSearch
 
     private
 
-    def search(full_name:)
-      result = repository.search(full_name: full_name)
+    def search(field, query)
+      result = repository.search(field: field, query: query)
 
       if result.empty?
-        puts "No clients match for #{full_name}"
+        puts "No clients match for #{query} on #{field}."
       else
-        puts "Matched clients for #{full_name}:"
+        puts "Matched clients for #{query} on #{field}:"
         result.each { |client| puts client }
       end
     end
