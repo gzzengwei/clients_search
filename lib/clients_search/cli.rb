@@ -1,33 +1,53 @@
 # frozen_string_literal: true
 
-require "json"
-
 module ClientsSearch
   class CLI
-    attr_reader :clients
+    attr_reader :repository
 
-    def initialize(file_path:)
-      @clients = parse_clients(file_path)
+    def initialize(repository:)
+      @repository = repository
     end
 
-    def search(full_name:)
-      clients.select do |client|
-        client["full_name"].downcase.include?(full_name.downcase)
+    def call(args)
+      command = args[0]
+      query = args[1]
+      puts "command #{command} and query #{query}"
+
+      case command
+      when "search"
+        search(full_name: query)
+      when "find_duplicates"
+        find_duplicates
+      else
+        puts "Invalid commands."
       end
-    end
-
-    def find_duplicates
-      clients
-        .group_by { |client| client["email"] }
-        .select { |_email, group| group.size > 1 }
     end
 
     private
 
-    def parse_clients(file_path)
-      raise "File not exists" unless File.exist?(file_path)
+    def search(full_name:)
+      result = repository.search(full_name: full_name)
 
-      JSON.parse(File.read(file_path))
+      if result.empty?
+        puts "No clients match for #{full_name}"
+      else
+        puts "Matched clients for #{full_name}:"
+        result.each { |client| puts client }
+      end
+    end
+
+    def find_duplicates
+      result = repository.find_duplicates
+
+      if result.empty?
+        puts "No duplicate clients"
+      else
+        puts "Duplicate clients:"
+        result.each do |key, group|
+          puts "for #{key}:"
+          group.each { |client| puts client }
+        end
+      end
     end
   end
 end

@@ -1,50 +1,53 @@
 # frozen_string_literal: true
 
 RSpec.describe ClientsSearch::CLI do
-  let(:file_path) { "spec/data/clients.json" }
-  let(:cli) { described_class.new(file_path: file_path) }
-
-  context "wrong file path" do
-    let(:file_path) { "spec/data/not_exists.json" }
-
-    it "raises exception" do
-      expect { cli }.to raise_error("File not exists")
-    end
+  let(:repository) { ClientsSearch::Repository.new(clients: clients) }
+  let(:clients) do
+    [
+      {
+        "id" => 1,
+        "email" => "john.doe@gmail.com",
+        "full_name" => "John Doe"
+      },
+      {
+        "id" => 2,
+        "email" => "jane.smith@yahoo.com",
+        "full_name" => "Jane Smith"
+      },
+      {
+        "id" => 15,
+        "email" => "jane.smith@yahoo.com",
+        "full_name" => "Another Jane Smith"
+      }
+    ]
   end
+  let(:cli) { described_class.new(repository: repository) }
 
-  context "#search" do
-    it "returns matched clients" do
-      expect(cli.search(full_name: "Jane")).to include(
-        {
-          "id" => 2,
-          "email" => "jane.smith@yahoo.com",
-          "full_name" => "Jane Smith"
-        },
-        {
-          "id" => 15,
-          "email" => "jane.smith@yahoo.com",
-          "full_name" => "Another Jane Smith"
-        }
-      )
+  describe "#run" do
+    context "for search command" do
+      it "outputs matched clients" do
+        expect { cli.call(["search", "John"]) }.to output(
+          include("Matched clients for John")
+          .and(include("john.doe@gmail.com"))
+        ).to_stdout
+      end
+
+      it "outputs for no matched clients" do
+        expect { cli.call(["search", "Whoever"]) }.to output(
+          include("No clients match for Whoever")
+        ).to_stdout
+      end
     end
-  end
 
-  context "#find_duplicates" do
-    it "returns duplicated email clients" do
-      expect(cli.find_duplicates).to include(
-        "jane.smith@yahoo.com" => [
-          {
-            "id" => 2,
-            "email" => "jane.smith@yahoo.com",
-            "full_name" => "Jane Smith"
-          },
-          {
-            "id" => 15,
-            "email" => "jane.smith@yahoo.com",
-            "full_name" => "Another Jane Smith"
-          }
-        ]
-      )
+    context "#find_duplicates" do
+      it "outputs duplicated email clients" do
+        expect { cli.call(["find_duplicates"]) }.to output(
+          include("Duplicate clients:")
+          .and(include("for jane.smith@yahoo.com:")
+          .and(include("Jane Smith")
+          .and(include("Another Jane Smith"))))
+        ).to_stdout
+      end
     end
   end
 end
