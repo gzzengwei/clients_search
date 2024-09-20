@@ -34,15 +34,15 @@ RSpec.describe ClientsSearch::CLI do
 
       it "outputs for no matched clients" do
         expect { cli.call(["search", "full_name", "Whoever"]) }.to output(
-          include("No clients match for Whoever")
+          include("No clients match for Whoever on full_name")
         ).to_stdout
       end
     end
 
     context "#find_duplicates" do
       it "outputs duplicated email clients" do
-        expect { cli.call(["find_duplicates"]) }.to output(
-          include("Duplicate clients:")
+        expect { cli.call(["find_duplicates", "email"]) }.to output(
+          include("Duplicate clients on email:")
           .and(include("for jane.smith@yahoo.com:")
           .and(include("Jane Smith")
           .and(include("Another Jane Smith"))))

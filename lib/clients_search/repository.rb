@@ -4,6 +4,8 @@ require "json"
 
 module ClientsSearch
   class Repository
+    DEFAULT_DUPLICATES_FIELD = "email"
+
     attr_reader :clients
 
     def initialize(clients:)
@@ -16,10 +18,12 @@ module ClientsSearch
       end
     end
 
-    def find_duplicates
+    def find_duplicates(field:)
+      field ||= DEFAULT_DUPLICATES_FIELD
+
       clients
-        .group_by { |client| client["email"] }
-        .select { |_email, group| group.size > 1 }
+        .group_by { |client| client[field] }
+        .select { |_field, group| group.size > 1 }
     end
   end
 end

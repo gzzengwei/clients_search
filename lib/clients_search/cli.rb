@@ -17,7 +17,7 @@ module ClientsSearch
       when "search"
         search(field, query)
       when "find_duplicates"
-        find_duplicates
+        find_duplicates(field)
       else
         puts "Invalid commands."
       end
@@ -36,13 +36,13 @@ module ClientsSearch
       end
     end
 
-    def find_duplicates
-      result = repository.find_duplicates
+    def find_duplicates(field)
+      result = repository.find_duplicates(field: field)
 
       if result.empty?
-        puts "No duplicate clients"
+        puts "No duplicate clients on #{field}"
       else
-        puts "Duplicate clients:"
+        puts "Duplicate clients on #{field}:"
         result.each do |key, group|
           puts "for #{key}:"
           group.each { |client| puts client }
