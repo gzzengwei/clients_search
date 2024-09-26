@@ -36,6 +36,28 @@ bin/clients_search find_duplicates email YOUR_COSTOM_JSON_FILE
 bin/clients_search find_duplicates full_name
 ```
 
+
+## Running the Web application
+
+
+we use sinatra for web application. to start server, run
+```
+ruby app.rb
+```
+- `localhost:3000/query` for query
+examples:
+```
+localhost:3000/query?q=John  # query on default field `full_name`
+localhost:3000/query?q=John&field=email  # query on field `email`
+```
+
+- `localhost:3000/find_duplicates` for find_duplicates
+examples:
+```
+localhost:3000/find_duplicates  # find_duplicates on default field `email`
+localhost:3000/find_duplicates?field=full_name  # find_duplicates on field `full_name`
+```
+
 ## Assumptions
 
 - default json file is `spec/data/clients.json`
