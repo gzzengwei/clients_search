@@ -13,6 +13,8 @@ module ClientsSearch
     end
 
     def search(field:, query:)
+      return clients if query.nil?
+
       clients.select do |client|
         client[field].to_s.downcase.include?(query.downcase)
       end
