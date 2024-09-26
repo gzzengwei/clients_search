@@ -9,17 +9,14 @@ module ClientsSearch
     end
 
     def call(args)
-      command = args[0]
-      field = args[1]
-      query = args[2]
-
+      command, field, query = args
       case command
       when "search"
         search(field, query)
       when "find_duplicates"
         find_duplicates(field)
       else
-        puts "Invalid commands."
+        puts "Invalid command."
       end
     end
 

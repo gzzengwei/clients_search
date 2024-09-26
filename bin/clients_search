@@ -50,13 +50,19 @@ end
 begin
   clients = ClientsSearch::Parser.call(file_path: data_file)
   repository = ClientsSearch::Repository.new(clients: clients)
+  cache = ClientsSearch::Cache.new
   cli = ClientsSearch::CLI.new(repository: repository)
 
   case command
   when 'search'
     field = ARGV[1]
     query = ARGV[2]
-    cli.call([command, field, query])
+    results = cache.get("#{field}:#{query.downcase}")
+    if results.nil?
+      cli.call([command, field, query]).tap {|result|
+        cache.set("#{field}:#{query.downcase}", results)
+      }
+    end
   when 'find_duplicates'
     field = ARGV[1] unless ARGV[1] == json_file_path
     cli.call([command, field].compact)
